@@ -12,7 +12,7 @@ do ônibus, espera extra por irregularidade, % de moradores negros e renda.
 - **Censo 2022 (IBGE)** — composição racial e renda por distrito.
 
 ## Honestidade
-Amostra **preliminar** (poucos dias de coleta). Leitura **descritiva, não causal**. Parte de
-um estudo de mobilidade urbana de São Paulo (Projeto MIIS / Instituto Pólis).
+Amostra **preliminar** (poucos dias de coleta). Leitura **descritiva**. Parte de um estudo de
+mobilidade urbana de São Paulo. Elaboração: **Igor Novaes Lins**.
 
 > Prévia temporária para avaliação.
