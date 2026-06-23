@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mobilidade e desigualdade em São Paulo — Igor Novaes Lins</title>
-<meta name="description" content="Raça, gênero, renda e transporte público em São Paulo, a partir de dados próprios de tempo real, da Pesquisa OD 2023 e do Censo 2022.">
+<meta name="description" content="Raça, gênero, renda e transporte público em São Paulo: mapa e gráficos interativos a partir de dados próprios de tempo real, da Pesquisa OD 2023 e do Censo 2022.">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
-  :root{ --verm:#E3120B; --tinta:#111; --cinza:#555; --linha:#e6e6e6; }
+  :root{ --verm:#E3120B; --tinta:#111; --cinza:#555; --linha:#e6e6e6; --barra:#9aa0a6; }
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:"Gill Sans","Gill Sans MT",Helvetica,Arial,sans-serif;
         color:var(--tinta); background:#fff; line-height:1.5; }
-  .wrap{ max-width:860px; margin:0 auto; padding:0 20px; }
+  .wrap{ max-width:900px; margin:0 auto; padding:0 20px; }
   header{ border-top:6px solid var(--verm); padding:34px 0 10px; }
   .flag{ display:inline-block; width:46px; height:16px; background:var(--verm); margin-bottom:14px; }
   h1{ font-size:34px; line-height:1.12; margin:0 0 8px; }
@@ -18,15 +19,17 @@
   .intro{ font-size:16px; color:#333; margin:18px 0 6px; }
   section{ padding:30px 0; border-top:1px solid var(--linha); }
   h2{ font-size:23px; margin:0 0 4px; }
-  .achado{ font-size:16px; color:#222; margin:6px 0 16px; }
+  .achado{ font-size:16px; color:#222; margin:6px 0 18px; }
   .achado b{ color:var(--verm); }
-  figure{ margin:0; }
-  img{ width:100%; height:auto; border:1px solid var(--linha); border-radius:4px; }
-  .btn{ display:inline-block; margin-top:16px; background:var(--verm); color:#fff;
-        text-decoration:none; font-weight:bold; padding:12px 22px; border-radius:5px; font-size:16px; }
-  .btn:hover{ background:#b10e09; }
+  .mapbox{ position:relative; border:1px solid var(--linha); border-radius:4px; overflow:hidden; }
+  iframe{ width:100%; height:600px; border:0; display:block; }
+  .full{ display:inline-block; margin-top:10px; font-size:14px; color:var(--verm); text-decoration:none; font-weight:bold; }
+  .charts{ display:flex; gap:18px; flex-wrap:wrap; }
+  .chart{ flex:1 1 360px; height:330px; }
+  .legenda{ font-size:13px; color:var(--cinza); margin-top:8px; }
+  .legenda .dot{ display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:middle;margin:0 3px 0 10px; }
   footer{ border-top:1px solid var(--linha); padding:26px 0 50px; font-size:13px; color:var(--cinza); }
-  @media (max-width:560px){ h1{ font-size:27px; } }
+  @media (max-width:560px){ h1{ font-size:27px; } iframe{ height:460px; } }
 </style>
 </head>
 <body>
@@ -34,25 +37,56 @@
   <span class="flag"></span>
   <h1>Mobilidade e desigualdade em São Paulo</h1>
   <p class="sub">Quem a cidade faz esperar — raça, gênero, renda e o transporte público.</p>
-  <p class="intro">A partir da <b>posição real dos ônibus</b>, coletada por nós minuto a minuto (sistema Olho Vivo/SPTrans), cruzada com o <b>Censo 2022</b> e a <b>Pesquisa Origem-Destino 2023</b>. Os dados crescem a cada dia; esta é uma amostra preliminar.</p>
+  <p class="intro">A partir da <b>posição real dos ônibus</b>, coletada por nós minuto a minuto (sistema Olho Vivo/SPTrans), cruzada com o <b>Censo 2022</b> e a <b>Pesquisa Origem-Destino 2023</b>. Os dados crescem a cada dia; esta é uma amostra preliminar. Mapa e gráficos são interativos.</p>
 </div></header>
 
 <section><div class="wrap">
   <h2>1. O ônibus é mais lento onde mora a população negra</h2>
-  <p class="achado">No terço de distritos com mais moradores negros, o ônibus anda <b>12,9 km/h</b>; no terço com menos, 13,7 km/h — cerca de <b>6% mais lento</b>. De 26 milhões de registros de posição que coletamos. O atraso, a espera por irregularidade do ônibus, também é maior nos bairros mais negros.</p>
-  <figure><img src="img/teaser_velocidade_raca.png" alt="Mapa: velocidade do ônibus e composição racial por distrito de São Paulo"></figure>
-  <a class="btn" href="mapa.html">Explorar o mapa interativo, bairro a bairro &rarr;</a>
+  <p class="achado">No terço de distritos com mais moradores negros, o ônibus anda <b>12,9 km/h</b>; no terço com menos, 13,7 km/h — cerca de <b>6% mais lento</b>. De 26 milhões de registros de posição que coletamos. O atraso, a espera por irregularidade do ônibus, também é maior nos bairros mais negros. <b>Clique em cada bairro</b> no mapa e alterne entre as camadas.</p>
+  <div class="mapbox"><iframe src="mapa.html" title="Mapa interativo: velocidade do ônibus, raça, renda e atraso por distrito" loading="lazy"></iframe></div>
+  <a class="full" href="mapa.html" target="_blank">Abrir o mapa em tela cheia &rarr;</a>
 </div></section>
 
 <section><div class="wrap">
   <h2>2. Quem depende do ônibus: gênero e raça</h2>
-  <p class="achado">A <b>mulher negra</b> é a que mais depende do transporte público para ir ao trabalho — <b>55%</b>, contra 26% do homem branco — e a que <b>mais tempo perde</b> no trajeto: <b>50 minutos</b>, contra 39. O grupo mais preso ao ônibus é, justamente, o que pega o ônibus mais lento.</p>
-  <figure><img src="img/od_genero_raca.png" alt="Gráfico: dependência do transporte público e tempo de viagem ao trabalho, por sexo e raça"></figure>
+  <p class="achado">A <b>mulher negra</b> é a que mais depende do transporte público para ir ao trabalho — <b>55%</b>, contra 26% do homem branco — e a que <b>mais tempo perde</b> no trajeto: <b>50 minutos</b>, contra 39. O grupo mais preso ao ônibus é, justamente, o que pega o ônibus mais lento. <i>Passe o mouse nas barras.</i></p>
+  <div class="charts">
+    <div id="cPub" class="chart"></div>
+    <div id="cTmp" class="chart"></div>
+  </div>
+  <p class="legenda"><span class="dot" style="background:#9aa0a6"></span>demais grupos<span class="dot" style="background:#E3120B"></span>mulher negra</p>
 </div></section>
 
 <footer><div class="wrap">
   <p><b>Fontes:</b> coleta própria da posição dos ônibus (API Olho Vivo / SPTrans); Pesquisa Origem-Destino 2023 (Metrô-SP); Censo 2022 (IBGE).</p>
   <p>Amostra preliminar — leitura descritiva, não causal. Os números são reproduzíveis e registrados. <b>Elaboração: Igor Novaes Lins.</b></p>
 </div></footer>
+
+<script>
+var CATS = ['Homem\nbranco','Homem\nnegro','Mulher\nbranca','Mulher\nnegra'];
+var COR  = ['#9aa0a6','#9aa0a6','#9aa0a6','#E3120B'];
+var FONT = '"Gill Sans","Gill Sans MT",Helvetica,Arial,sans-serif';
+function barra(elId, titulo, valores, sufixo){
+  var ch = echarts.init(document.getElementById(elId));
+  ch.setOption({
+    textStyle:{ fontFamily: FONT },
+    title:{ text: titulo, left:0, top:0, textStyle:{ fontSize:14, fontWeight:'bold', color:'#111' } },
+    grid:{ left:8, right:12, top:46, bottom:24, containLabel:true },
+    tooltip:{ trigger:'item', formatter: function(p){ return p.name.replace('\n',' ') + ': <b>' + p.value + sufixo + '</b>'; } },
+    xAxis:{ type:'category', data: CATS, axisTick:{show:false}, axisLine:{ lineStyle:{color:'#bbb'} },
+            axisLabel:{ color:'#333', fontSize:11, lineHeight:13 } },
+    yAxis:{ type:'value', splitLine:{ lineStyle:{ color:'#eee' } }, axisLabel:{ color:'#777' } },
+    series:[{ type:'bar', barWidth:'58%',
+      data: valores.map(function(v,i){ return { value:v, itemStyle:{ color: COR[i] } }; }),
+      label:{ show:true, position:'top', fontFamily:FONT, fontWeight:'bold', fontSize:12,
+              formatter: function(p){ return p.value + sufixo; } },
+      animationDuration: 700 }]
+  });
+  return ch;
+}
+var g1 = barra('cPub', 'Dependem do transporte público (%)', [26,34,42,55], '%');
+var g2 = barra('cTmp', 'Tempo médio ao trabalho (min)', [39,45,42,50], ' min');
+window.addEventListener('resize', function(){ g1.resize(); g2.resize(); });
+</script>
 </body>
 </html>
