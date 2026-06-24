@@ -49,27 +49,12 @@
 
 <section><div class="wrap">
   <h2>2. A mulher negra depende mais do ônibus e perde mais tempo nele</h2>
-  <p class="achado">Para ir ao trabalho, <b>55%</b> das mulheres negras usam transporte público, contra <b>26%</b> dos homens brancos. E gastam mais tempo no caminho — <b>50 minutos</b>, contra 39. Quem mais depende do ônibus é justamente quem pega o ônibus mais lento. <i>Clique numa barra para ver como cada grupo se desloca.</i></p>
+  <p class="achado">Para ir ao trabalho, <b>55%</b> das mulheres negras usam transporte público, contra <b>26%</b> dos homens brancos. E gastam mais tempo no caminho — <b>50 minutos</b>, contra 39. Quem mais depende do ônibus é justamente quem pega o ônibus mais lento. <i>Passe o mouse numa barra (ou toque, no celular) para ver como cada grupo se desloca.</i></p>
   <div class="charts">
     <div id="cPub" class="chart"></div>
     <div id="cTmp" class="chart"></div>
   </div>
   <p class="legenda"><span class="dot" style="background:#9aa0a6"></span>demais grupos<span class="dot" style="background:#E3120B"></span>mulher negra</p>
-  <div id="cardGrupo" class="cardgrupo"></div>
-  <style>
-    .cardgrupo{ margin-top:18px; border:1px solid var(--linha); border-radius:6px; padding:16px 18px; background:#fafafa; }
-    .cg-head{ font-weight:bold; font-size:15px; margin-bottom:13px; }
-    .cg-head .sub{ font-weight:normal; color:var(--cinza); font-size:13px; }
-    .cg-row{ display:flex; align-items:center; gap:10px; margin:6px 0; font-size:13px; }
-    .cg-lab2{ width:108px; flex:none; color:#333; }
-    .cg-track{ flex:1; height:9px; background:#e8eaed; border-radius:5px; overflow:hidden; }
-    .cg-fill{ display:block; height:100%; border-radius:5px; }
-    .cg-val{ width:40px; flex:none; text-align:right; font-weight:bold; color:#222; }
-    .cg-stats{ display:flex; gap:30px; margin-top:15px; padding-top:13px; border-top:1px solid var(--linha); flex-wrap:wrap; align-items:baseline; }
-    .cg-big{ font-size:21px; font-weight:bold; color:#111; }
-    .cg-lab{ font-size:13px; color:var(--cinza); }
-    .cg-fonte{ margin-top:12px; font-size:11px; color:#9aa0a6; }
-  </style>
 </div></section>
 
 <section><div class="wrap">
@@ -96,7 +81,9 @@ function barra(elId, titulo, valores, sufixo){
     textStyle:{ fontFamily: FONT },
     title:{ text: titulo, left:0, top:0, textStyle:{ fontSize:14, fontWeight:'bold', color:'#111' } },
     grid:{ left:8, right:12, top:46, bottom:24, containLabel:true },
-    tooltip:{ trigger:'item', formatter: function(p){ return p.name.replace('\n',' ') + ': <b>' + p.value + sufixo + '</b>'; } },
+    tooltip:{ trigger:'item', confine:true, borderColor:'#e3e3e3', backgroundColor:'#fff',
+              extraCssText:'box-shadow:0 3px 16px rgba(0,0,0,.18);padding:13px 15px;border-radius:7px;',
+              formatter: function(p){ return tipHTML(p.dataIndex); } },
     xAxis:{ type:'category', data: CATS, axisTick:{show:false}, axisLine:{ lineStyle:{color:'#bbb'} },
             axisLabel:{ color:'#333', fontSize:11, lineHeight:13 } },
     yAxis:{ type:'value', splitLine:{ lineStyle:{ color:'#eee' } }, axisLabel:{ color:'#777' } },
@@ -112,34 +99,32 @@ var g1 = barra('cPub', 'Dependem do transporte público (%)', [26,34,42,55], '%'
 var g2 = barra('cTmp', 'Tempo médio ao trabalho (min)', [39,45,42,50], ' min');
 window.addEventListener('resize', function(){ g1.resize(); g2.resize(); });
 
-/* ---- retrato fino de cada grupo (clique na barra) — OD 2023, registrado ---- */
+/* ---- retrato fino de cada grupo, DENTRO do tooltip (hover) — OD 2023, registrado ---- */
 var DET = {"Homem_Branca":{"publico":26,"ape":15,"carro":44,"moto":9,"bici":3,"outros":2,"carro_casa":72,"tempo_pub":70},"Homem_Negra":{"publico":34,"ape":16,"carro":34,"moto":10,"bici":4,"outros":3,"carro_casa":60,"tempo_pub":76},"Mulher_Branca":{"publico":42,"ape":18,"carro":37,"moto":2,"bici":1,"outros":1,"carro_casa":67,"tempo_pub":66},"Mulher_Negra":{"publico":55,"ape":20,"carro":20,"moto":2,"bici":0,"outros":2,"carro_casa":50,"tempo_pub":72}};
 var GORD  = ['Homem_Branca','Homem_Negra','Mulher_Branca','Mulher_Negra'];
 var GNOME = {Homem_Branca:'Homem branco',Homem_Negra:'Homem negro',Mulher_Branca:'Mulher branca',Mulher_Negra:'Mulher negra'};
 var MODOS = [['publico','Ônibus / trilho'],['ape','A pé'],['carro','Carro / app'],['moto','Moto'],['bici','Bicicleta'],['outros','Outros']];
-function renderCard(idx){
+function tipHTML(idx){
   var k = GORD[idx], d = DET[k], isMN = (k==='Mulher_Negra');
   var rows = MODOS.map(function(m){
     var v = d[m[0]];
     if (m[0]==='outros' && v<=0) return '';
     var cor = (m[0]==='publico') ? '#E3120B' : '#9aa0a6';
-    return '<div class="cg-row"><span class="cg-lab2">'+m[1]+'</span>'+
-           '<span class="cg-track"><span class="cg-fill" style="width:'+v+'%;background:'+cor+'"></span></span>'+
-           '<span class="cg-val">'+v+'%</span></div>';
+    return '<div style="display:flex;align-items:center;gap:8px;margin:4px 0;font-size:12px">'+
+           '<span style="width:86px;flex:none;color:#333">'+m[1]+'</span>'+
+           '<span style="flex:1;height:8px;background:#e8eaed;border-radius:4px;overflow:hidden">'+
+             '<span style="display:block;height:100%;width:'+v+'%;background:'+cor+'"></span></span>'+
+           '<span style="width:30px;flex:none;text-align:right;font-weight:bold;color:#222">'+v+'%</span></div>';
   }).join('');
-  document.getElementById('cardGrupo').innerHTML =
-    '<div class="cg-head"'+(isMN?' style="color:#E3120B"':'')+'>'+GNOME[k]+
-    ' <span class="sub">· como vai ao trabalho</span></div>'+
+  return '<div style="width:248px">'+
+    '<div style="font-weight:bold;font-size:14px;margin-bottom:9px'+(isMN?';color:#E3120B':';color:#111')+'">'+
+      GNOME[k]+'<span style="font-weight:normal;color:#888;font-size:12px"> · como vai ao trabalho</span></div>'+
     rows+
-    '<div class="cg-stats">'+
-      '<div><span class="cg-big">'+d.carro_casa+'%</span> <span class="cg-lab">têm carro em casa</span></div>'+
-      '<div><span class="cg-big">'+d.tempo_pub+' min</span> <span class="cg-lab">no transporte público</span></div>'+
-    '</div>'+
-    '<div class="cg-fonte">Viagens ao trabalho · Pesquisa OD 2023 (expandida). Clique em outra barra para comparar.</div>';
+    '<div style="margin-top:10px;padding-top:9px;border-top:1px solid #eee;font-size:12px;color:#555;line-height:1.7">'+
+      '<b style="font-size:15px;color:#111">'+d.carro_casa+'%</b> têm carro em casa<br>'+
+      '<b style="font-size:15px;color:#111">'+d.tempo_pub+' min</b> no transporte público</div>'+
+    '</div>';
 }
-g1.on('click', function(p){ renderCard(p.dataIndex); });
-g2.on('click', function(p){ renderCard(p.dataIndex); });
-renderCard(3); // mulher negra por padrão
 </script>
 </body>
 </html>
